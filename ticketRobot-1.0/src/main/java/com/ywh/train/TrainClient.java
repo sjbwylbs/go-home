@@ -6,8 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +26,11 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -39,7 +47,37 @@ public class TrainClient {
 	 * 构造函数 
 	 */
 	public TrainClient(HttpClient client) {
-		this.httpclient = client;
+		 try {
+             SSLContext ctx = SSLContext.getInstance("TLS");
+             X509TrustManager tm = new X509TrustManager() {
+                     public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                             return null;
+                     }
+					public void checkClientTrusted(
+							java.security.cert.X509Certificate[] chain,
+							String authType)
+							throws java.security.cert.CertificateException {
+						
+					}
+					public void checkServerTrusted(
+							java.security.cert.X509Certificate[] chain,
+							String authType)
+							throws java.security.cert.CertificateException {
+						
+					}
+             };
+//             SecureRandom random = new SecureRandom();
+//             byte bytes[] = new byte[20];
+//             random.nextBytes(bytes);
+             ctx.init(null, new TrustManager[]{tm}, null);
+             SSLSocketFactory ssf = new SSLSocketFactory(ctx);
+             Scheme sch = new Scheme("https", 443, ssf);
+             ClientConnectionManager ccm = client.getConnectionManager();
+             ccm.getSchemeRegistry().register(sch);
+             this.httpclient = new DefaultHttpClient(ccm, client.getParams());
+     } catch (Exception ex) {
+             ex.printStackTrace();
+     }
 	}
 
 	/**
@@ -294,6 +332,7 @@ public class TrainClient {
 		} else {
 			log.warn("用户:"  + username + " 登录失败");
 			log.warn(info);
+			log.info(responseBody);
 			rs.setState(Result.FAIL);
 			rs.setMsg("用户:"  + username + " 登录失败");
 		}
@@ -405,65 +444,65 @@ public class TrainClient {
 		return baos.toByteArray();
 	}
 	
-//	public final static void main(String[] args) throws Exception {
-//
-//		DefaultHttpClient dhc = new DefaultHttpClient();
-//		try {
-//			UserInfo ui = new UserInfo();
-//			ui.setUserName("sg000001"); ui.setPassword("258456");
-//			ui.setStartDate("2011-11-30"); ui.setRangDate("18:00--24:00");
-//			ui.setFromCity("上海"); ui.setToCity("苏州"); 
-//			ui.setSeatType("O");ui.setTickType("1");
-//			ui.setName("邬建功");ui.setPhone("15021553714");
-//			ui.setID("500383197108186415"); ui.setCardType("1");
-//			
-//			TrainClient client = new TrainClient(dhc);
-//			Result rs = new Result();
-//			rs.setState(true);
-//			String randCode = client.getCode(Constant.LOGIN_CODE_URL);
-////			System.out.println("开始登陆");
-////			rs = client.login("sg000001","258456", randCode);
-////			System.out.println(rs);
-//			if (rs.isOK()) {
-//				System.out.println("正在查询");
-//				List<TrainQueryInfo> allTrain = client.queryTrain(ui.getFromCity(), ui.getToCity(), ui.getStartDate(), ui.getRangDate());
-//				if (allTrain.size() == 0) {
-//					rs.setState(false);
-//					rs.setMsg("未找到从"+ui.getFromCity()+"到"+ui.getToCity()+"的可预订列车信息");
-//					System.out.println(rs);
-//					return;
-//				} else {
-//					rs.setState(true);
-//					Collections.sort(allTrain, new TrainComparator());
-//					for (TrainQueryInfo ti : allTrain) {
-//						System.out.println(ti);
-//					}
-//					rs.setMsg(ui.getStartDate() + "共找到从"+ui.getFromCity()+"到"+ui.getToCity()+"的可预订列车" + allTrain.size() +"趟");
-//					System.out.println(rs);
-//				}
-////				TrainQueryInfo train = allTrain.get(0);
-////				ui.setSeatType(Util.getSeatAI(train));
-////				System.out.println("查询历史订单");
-////				rs = client.queryOrder();
-////				System.out.println(rs);
-////				
-////				System.out.println("开始预定");
-////				rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
-////				System.out.println(rs);
-////				randCode = client.getCode(Constant.ORDER_CODE_URL);
-////				String token = client.getToken();
-////				System.out.println("提交订单");
-////				rs = client.submiOrder(randCode, token, ui, train);
-////				System.out.println(rs);
-////				System.out.println("查询订单");
-////				rs = client.queryOrder();
-////				System.out.println(rs);
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			dhc.getConnectionManager().shutdown();
-//		}
-//	}
+	public final static void main(String[] args) throws Exception {
+
+		DefaultHttpClient dhc = new DefaultHttpClient();
+		try {
+			UserInfo ui = new UserInfo();
+			ui.setUserName("sg000001"); ui.setPassword("258456");
+			ui.setStartDate("2011-11-30"); ui.setRangDate("18:00--24:00");
+			ui.setFromCity("上海"); ui.setToCity("苏州"); 
+			ui.setSeatType("O");ui.setTickType("1");
+			ui.setName("邬建功");ui.setPhone("15021553714");
+			ui.setID("500383197108186415"); ui.setCardType("1");
+			
+			TrainClient client = new TrainClient(dhc);
+			Result rs = new Result();
+			rs.setState(Result.FAIL);
+			String randCode = client.getCode(Constants.LOGIN_CODE_URL);
+			System.out.println("开始登陆");
+			rs = client.login("sg000001","258456", randCode);
+			System.out.println(rs);
+			if (rs.getState() == Result.SUCC) {
+				System.out.println("正在查询");
+				List<TrainQueryInfo> allTrain = client.queryTrain(ui.getFromCity(), ui.getToCity(), ui.getStartDate(), ui.getRangDate());
+				if (allTrain.size() == 0) {
+					rs.setState(Result.FAIL);
+					rs.setMsg("未找到从"+ui.getFromCity()+"到"+ui.getToCity()+"的可预订列车信息");
+					System.out.println(rs);
+					return;
+				} else {
+					rs.setState(Result.SUCC);
+					Collections.sort(allTrain, new TrainComparator());
+					for (TrainQueryInfo ti : allTrain) {
+						System.out.println(ti);
+					}
+					rs.setMsg(ui.getStartDate() + "共找到从"+ui.getFromCity()+"到"+ui.getToCity()+"的可预订列车" + allTrain.size() +"趟");
+					System.out.println(rs);
+				}
+//				TrainQueryInfo train = allTrain.get(0);
+//				ui.setSeatType(Util.getSeatAI(train));
+//				System.out.println("查询历史订单");
+//				rs = client.queryOrder();
+//				System.out.println(rs);
+//				
+//				System.out.println("开始预定");
+//				rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
+//				System.out.println(rs);
+//				randCode = client.getCode(Constant.ORDER_CODE_URL);
+//				String token = client.getToken();
+//				System.out.println("提交订单");
+//				rs = client.submiOrder(randCode, token, ui, train);
+//				System.out.println(rs);
+//				System.out.println("查询订单");
+//				rs = client.queryOrder();
+//				System.out.println(rs);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			dhc.getConnectionManager().shutdown();
+		}
+	}
 
 }
