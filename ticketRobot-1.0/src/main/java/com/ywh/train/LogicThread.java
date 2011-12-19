@@ -183,7 +183,7 @@ public class LogicThread extends Thread {
 			label.setText(" 自动识别为:" + randCodeByRob);
 			CodeMouseAdapter cma = new CodeMouseAdapter(randCodeByRob);
 			label.addMouseListener(cma);
-			String input = JOptionPane.showInputDialog(null, label, "请输入验证码",
+			String input = JOptionPane.showInputDialog(rob.getFrame(), label, "请输入验证码",
 					JOptionPane.DEFAULT_OPTION);
 			if (input == null || input.isEmpty()) {
 				randCodeByRob = cma.getRandCodeByRob();
@@ -198,7 +198,7 @@ public class LogicThread extends Thread {
 		/**
 		 * 构造函数
 		 * 
-		 * @param randCodeByRob2
+		 * @param CodeMouseAdapter
 		 */
 
 		public CodeMouseAdapter(String randCodeByRob) {

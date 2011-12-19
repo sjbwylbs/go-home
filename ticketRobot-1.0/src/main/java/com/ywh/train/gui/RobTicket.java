@@ -23,6 +23,7 @@
  
 package com.ywh.train.gui;
 
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,9 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.text.ParseException;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -49,6 +53,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -57,10 +62,14 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
 import tk.mystudio.ocr.OCR;
 
@@ -96,9 +105,11 @@ public class RobTicket {
 	private JTextArea textArea;
 	private JButton btnSORE;
 	
-	private final static HttpClient httpClient = new DefaultHttpClient();
-	private TrainClient client = new TrainClient(httpClient);
+	private HttpClient httpClient = null;
+	private TrainClient client = null;
 	private LogicThread logic;
+	private JPanel panel;
+	private JPanel panel_1;
 
 	/**
 	 * Launch the application.
@@ -114,7 +125,15 @@ public class RobTicket {
 					e.printStackTrace();
 				}
 			}
-		});
+		});		
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public RobTicket() {
+		initNetwork();
+		initialize();
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			public void run() {
 				httpClient.getConnectionManager().shutdown();
@@ -123,10 +142,44 @@ public class RobTicket {
 	}
 
 	/**
-	 * Create the application.
+	 * 初始化网络模块
 	 */
-	public RobTicket() {
-		initialize();
+	private void initNetwork() {
+		try {
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			X509TrustManager tm = new X509TrustManager() {
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType)
+						throws java.security.cert.CertificateException {
+
+				}
+
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] chain,
+						String authType)
+						throws java.security.cert.CertificateException {
+
+				}
+			};
+			// SecureRandom random = new SecureRandom();
+			// byte bytes[] = new byte[20];
+			// random.nextBytes(bytes);
+			ctx.init(null, new TrustManager[] { tm }, null);
+			SSLSocketFactory ssf = new SSLSocketFactory(ctx);
+			Scheme sch = new Scheme("https", 443, ssf);
+			ThreadSafeClientConnManager tcm = new ThreadSafeClientConnManager();
+			tcm.setMaxTotal(10);
+			tcm.getSchemeRegistry().register(sch);
+			this.httpClient = new DefaultHttpClient(tcm);
+			this.client = new TrainClient(this.httpClient);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	/**
@@ -142,41 +195,48 @@ public class RobTicket {
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
 		
+		panel = new JPanel();
+		panel.setBounds(10, 22, 467, 54);
+		frame.getContentPane().add(panel);
+		panel.setLayout(null);
+		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u767B\u5F55\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		
 		JLabel label = new JLabel("用户名:");
+		label.setBounds(20, 26, 43, 15);
+		panel.add(label);
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
-		label.setBounds(34, 37, 43, 15);
-		frame.getContentPane().add(label);
 		
 		txtUsername = new JTextField();
-		txtUsername.setBounds(81, 34, 84, 21);
-		frame.getContentPane().add(txtUsername);
+		txtUsername.setBounds(67, 23, 84, 21);
+		panel.add(txtUsername);
 		txtUsername.setColumns(10);
 		
 		JLabel label_1 = new JLabel("密 码:");
+		label_1.setBounds(156, 26, 43, 15);
+		panel.add(label_1);
 		label_1.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_1.setBounds(170, 37, 43, 15);
-		frame.getContentPane().add(label_1);
 		
 		txtPassword = new JPasswordField();
-		txtPassword.setBounds(218, 34, 66, 21);
-		frame.getContentPane().add(txtPassword);
+		txtPassword.setBounds(204, 23, 66, 21);
+		panel.add(txtPassword);
 		txtPassword.setColumns(10);
 		
 		JLabel label_2 = new JLabel("验证码:");
+		label_2.setBounds(280, 26, 43, 15);
+		panel.add(label_2);
 		label_2.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_2.setBounds(294, 37, 43, 15);
-		frame.getContentPane().add(label_2);
-		
-		byte[] imageByte = client.getCodeByte(Constants.LOGIN_CODE_URL);
 		txtRandCode = new JTextField();
-		txtRandCode.setBounds(342, 34, 66, 21);
-		frame.getContentPane().add(txtRandCode);
+		txtRandCode.setBounds(328, 23, 66, 21);
+		panel.add(txtRandCode);
 		txtRandCode.setColumns(10);
+		byte[] imageByte = client.getCodeByte(Constants.LOGIN_CODE_URL);
 		txtRandCode.setText(OCR.read(imageByte));
 		
+		
 		lblRc = new JLabel("Click Me");
+		lblRc.setBounds(396, 23, 61, 21);
+		panel.add(lblRc);
 		lblRc.setIcon(new ImageIcon(imageByte));
-		lblRc.setBounds(414, 34, 61, 21);
 		lblRc.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -186,32 +246,37 @@ public class RobTicket {
 				txtRandCode.setText(randCodeByRob);
 			}
 		});
-		frame.getContentPane().add(lblRc);
+		
+		panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u4E58\u8F66\u4EBA\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_1.setBounds(10, 81, 467, 112);
+		frame.getContentPane().add(panel_1);
+		panel_1.setLayout(null);
 		
 		JLabel label_3 = new JLabel("身份证号码:");
+		label_3.setBounds(0, 29, 73, 15);
+		panel_1.add(label_3);
 		label_3.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_3.setBounds(4, 79, 73, 15);
-		frame.getContentPane().add(label_3);
 		
 		txtUserID = new JTextField();
-		txtUserID.setBounds(81, 76, 201, 21);
-		frame.getContentPane().add(txtUserID);
+		txtUserID.setBounds(77, 26, 201, 21);
+		panel_1.add(txtUserID);
 		txtUserID.setColumns(10);
 		
 		JLabel label_5 = new JLabel("姓 名:");
+		label_5.setBounds(297, 29, 36, 15);
+		panel_1.add(label_5);
 		label_5.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_5.setBounds(301, 79, 36, 15);
-		frame.getContentPane().add(label_5);
 		
 		txtName = new JTextField();
-		txtName.setBounds(342, 76, 66, 21);
-		frame.getContentPane().add(txtName);
+		txtName.setBounds(338, 26, 66, 21);
+		panel_1.add(txtName);
 		txtName.setColumns(10);		
 		
 		JLabel label_6 = new JLabel("乘车日期:");
+		label_6.setBounds(12, 85, 61, 15);
+		panel_1.add(label_6);
 		label_6.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_6.setBounds(16, 161, 61, 15);
-		frame.getContentPane().add(label_6);
 		
 		MaskFormatter mf = null;
 		try {
@@ -220,29 +285,51 @@ public class RobTicket {
 			e1.printStackTrace();
 		}
 		txtStartDate = new JFormattedTextField(mf);
-		txtStartDate.setBounds(81, 158, 84, 21);
-		frame.getContentPane().add(txtStartDate);
+		txtStartDate.setBounds(77, 82, 84, 21);
+		panel_1.add(txtStartDate);
 		txtStartDate.setColumns(10);
 		
 		JLabel label_4 = new JLabel("发 站:");
+		label_4.setBounds(166, 85, 43, 15);
+		panel_1.add(label_4);
 		label_4.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_4.setBounds(170, 161, 43, 15);
-		frame.getContentPane().add(label_4);
 		
 		txtFromStation = new JTextField();
-		txtFromStation.setBounds(216, 158, 66, 21);
-		frame.getContentPane().add(txtFromStation);
+		txtFromStation.setBounds(212, 82, 66, 21);
+		panel_1.add(txtFromStation);
 		txtFromStation.setColumns(10);
 		
 		JLabel label_7 = new JLabel("到 站:");
+		label_7.setBounds(297, 85, 36, 15);
+		panel_1.add(label_7);
 		label_7.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_7.setBounds(301, 161, 36, 15);
-		frame.getContentPane().add(label_7);
 		
 		txtToStation = new JTextField();
-		txtToStation.setBounds(342, 158, 66, 21);
-		frame.getContentPane().add(txtToStation);
+		txtToStation.setBounds(338, 82, 66, 21);
+		panel_1.add(txtToStation);
 		txtToStation.setColumns(10);
+		
+		JLabel label_8 = new JLabel("手机号码:");
+		label_8.setBounds(10, 57, 61, 15);
+		panel_1.add(label_8);
+		label_8.setHorizontalAlignment(SwingConstants.RIGHT);
+		try {
+			mf = new MaskFormatter("###########");
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		txtPhone = new JFormattedTextField(mf);
+		txtPhone.setBounds(77, 54, 84, 21);
+		panel_1.add(txtPhone);
+		txtPhone.setColumns(10);
+		
+		JLabel label_9 = new JLabel("乘车时间段:");
+		label_9.setBounds(260, 57, 73, 15);
+		panel_1.add(label_9);
+		label_9.setHorizontalAlignment(SwingConstants.RIGHT);
+		BoxoRang = new JComboBox(Constants.trainRang.keySet().toArray());
+		BoxoRang.setBounds(338, 54, 66, 21);
+		panel_1.add(BoxoRang);
 		
 		boxkDFirst = new JCheckBox("动车优先");
 		boxkDFirst.setBounds(18, 199, 84, 23);
@@ -256,25 +343,11 @@ public class RobTicket {
 		boxkIsAuto.setBounds(219, 199, 133, 23);
 		frame.getContentPane().add(boxkIsAuto);
 		
-		JLabel label_8 = new JLabel("手机号码:");
-		label_8.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_8.setBounds(16, 119, 61, 15);
-		frame.getContentPane().add(label_8);
-		
 		try {
 			mf = new MaskFormatter("###########");
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-		txtPhone = new JFormattedTextField(mf);
-		txtPhone.setBounds(81, 116, 84, 21);
-		frame.getContentPane().add(txtPhone);
-		txtPhone.setColumns(10);
-		
-		JLabel label_9 = new JLabel("乘车时间段:");
-		label_9.setHorizontalAlignment(SwingConstants.RIGHT);
-		label_9.setBounds(264, 116, 73, 15);
-		frame.getContentPane().add(label_9);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -291,9 +364,6 @@ public class RobTicket {
 		btnSORE = new JButton("开始");
 		btnSORE.setBounds(379, 199, 73, 23);
 		frame.getContentPane().add(btnSORE);
-		BoxoRang = new JComboBox(Constants.trainRang.keySet().toArray());
-		BoxoRang.setBounds(342, 113, 66, 21);
-		frame.getContentPane().add(BoxoRang);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBounds(0, 0, 487, 21);
@@ -303,8 +373,16 @@ public class RobTicket {
 		menuBar.add(mnOpt);
 		
 		JMenuItem miOpt = new JMenuItem("使用技巧");
-		mnOpt.add(miOpt);
+//		mnOpt.add(miOpt);
 		miOpt.addActionListener(new UseSkillAction(frame));
+		
+		JMenuItem miExit = new JMenuItem("退出");
+		mnOpt.add(miExit);
+		miExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
 		
 		JMenu mnHelp = new JMenu("帮助");
 		menuBar.add(mnHelp);
