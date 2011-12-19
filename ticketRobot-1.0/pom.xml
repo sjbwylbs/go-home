@@ -1,11 +1,93 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>	
-	<groupId>tk.mystudio</groupId>
+	<groupId>cafebabe</groupId>
 	<artifactId>ticketRobot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ticketRobot</name>
 	<description>a robot for train ticket with OCR and AI</description>
+	<build>
+     <plugins>
+          <!-- set compile level and encoding -->
+          <!-- 
+          <plugin>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <configuration>
+                    <target>1.6</target>
+                    <source>1.6</source>
+                    <encoding>GBK</encoding>
+               </configuration>
+          </plugin>
+           -->
+          <!-- skip test -->
+          <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-surefire-plugin</artifactId>
+               <configuration>
+                    <skip>true</skip>
+               </configuration>
+          </plugin>      
+          <!-- 部署源码 -->
+          <!-- 
+          <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-source-plugin</artifactId>
+               <executions>
+                    <execution>
+                         <id>attach-sources</id>
+                         <goals>
+		                    <goal>jar</goal>
+                         </goals>
+                    </execution>
+               </executions>
+          </plugin>
+           -->
+          <!-- 部署api doc -->
+          <!-- 
+          <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <configuration>
+                    <encoding>UTF-8</encoding>
+               </configuration>
+               <executions>
+                    <execution>
+                         <id>attach-javadocs</id>
+                         <goals>
+                              <goal>jar</goal>
+                         </goals>
+                    </execution>
+               </executions>
+          </plugin>
+           -->
+          <!-- 打成可运行jar包 -->
+          <plugin>  
+            <groupId>org.apache.maven.plugins</groupId> 
+            <artifactId>maven-shade-plugin</artifactId> 
+            <version>1.2.1</version> 
+            <executions> 
+			<execution> 
+                  <phase>package</phase> 
+                  <goals> 
+                     <goal>shade</goal> 
+                  </goals> 
+                  <configuration> 
+                       <transformers> 
+                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">  
+                                                  <mainClass>com.ywh.train.gui.RobTicket</mainClass>   
+                         </transformer> 
+           		    </transformers>  
+                  </configuration>  
+               </execution> 
+            </executions> 
+          </plugin>  
+     </plugins>
+     <!-- set the target fileName -->
+     <!-- 
+     <finalName>ROOT</finalName>
+      -->
+</build>
+
 
 	<dependencies>
 		<!-- htmlparser -->
@@ -47,19 +129,16 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j-version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j-version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j-version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<!-- test -->
 		<dependency>
