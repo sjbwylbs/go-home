@@ -34,8 +34,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.text.ParseException;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,6 +45,9 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -64,12 +69,9 @@ import com.ywh.train.LogicThread;
 import com.ywh.train.TrainClient;
 import com.ywh.train.UserInfo;
 import com.ywh.train.Util;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /**
- * 功能描述
+ * 订票机器人
  * @author cafebabe
  * @since 2011-11-27 
  * @version 1.0
@@ -131,7 +133,7 @@ public class RobTicket {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {		
-		frame = new JFrame("我要回家 v1.0.0");
+		frame = new JFrame("我要回家");
 		ImageIcon ico = new ImageIcon(ClassLoader.getSystemResource("logo.jpg"));
 		frame.setIconImage(ico.getImage());
 		frame.setBounds(100, 100, 493, 458);
@@ -172,7 +174,7 @@ public class RobTicket {
 		txtRandCode.setColumns(10);
 		txtRandCode.setText(OCR.read(imageByte));
 		
-		lblRc = new JLabel("RC");
+		lblRc = new JLabel("Click Me");
 		lblRc.setIcon(new ImageIcon(imageByte));
 		lblRc.setBounds(414, 34, 61, 21);
 		lblRc.addMouseListener(new MouseAdapter() {
@@ -297,17 +299,19 @@ public class RobTicket {
 		menuBar.setBounds(0, 0, 487, 21);
 		frame.getContentPane().add(menuBar);
 		
-		JMenu mnNewMenu = new JMenu("操作");
-		menuBar.add(mnNewMenu);
+		JMenu mnOpt = new JMenu("操作");
+		menuBar.add(mnOpt);
 		
-		JMenuItem menuItem_1 = new JMenuItem("使用技巧");
-		mnNewMenu.add(menuItem_1);
+		JMenuItem miOpt = new JMenuItem("使用技巧");
+		mnOpt.add(miOpt);
+		miOpt.addActionListener(new UseSkillAction(frame));
 		
 		JMenu mnHelp = new JMenu("帮助");
 		menuBar.add(mnHelp);
 		
-		JMenuItem menuItem = new JMenuItem("关于");
-		mnHelp.add(menuItem);
+		JMenuItem miAbout = new JMenuItem("关于");
+		mnHelp.add(miAbout);
+		miAbout.addActionListener(new AboutAction(frame));
 		
 		readUserInfo();
 		btnSORE.addActionListener(new ActionListener() {
@@ -342,6 +346,10 @@ public class RobTicket {
 	 * 启动方法
 	 */
 	protected void action() {
+		// 动车优先
+		if (Constants.ISTRAINDFIRST) {
+			Constants.setTrainPriority(Constants.TRAIN_D, 40);
+		}
 		btnSORE.setText("结束");
 		textArea.setText("");
 		String username = txtUsername.getText().trim();
@@ -443,4 +451,57 @@ public class RobTicket {
 		textArea.append(Util.formatInfo(content));
 		textArea.setCaretPosition(textArea.getText().length());
 	}
+	
+	public JFrame getFrame() {
+		return frame;
+	}
+	
+	class AboutAction extends AbstractAction {
+		/**字段注释*/
+		private static final long serialVersionUID = 1L;
+		
+		JFrame parentsFrame;
+		URL img = getClass().getResource("/logo.jpg");
+		String imagesrc = "<img src=\"" + img + "\" width=\"50\" height=\"50\">";
+		String message = Constants.ABOUNT_CONTENT;
+
+		protected AboutAction(JFrame frame) {
+			this.parentsFrame = frame;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(
+			    parentsFrame,
+			    "<html><center>" + imagesrc + "</center><br><center>" + message + "</center><br></html>",
+			    "关于 我要回家",
+			    JOptionPane.DEFAULT_OPTION
+			);
+
+		}
+	}
+	
+	class UseSkillAction extends AbstractAction {
+		/**字段注释*/
+		private static final long serialVersionUID = 1L;
+		
+		JFrame parentsFrame;
+		URL img = getClass().getResource("/logo.jpg");
+		String imagesrc = "<img src=\"" + img + "\" width=\"50\" height=\"50\">";
+		String message = "别急还有待整理！";
+
+		protected UseSkillAction(JFrame frame) {
+			this.parentsFrame = frame;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(
+			    parentsFrame,
+			    "<html>" + imagesrc + "<br><center>" + message + "</center><br></html>",
+			    "使用技巧",
+			    JOptionPane.DEFAULT_OPTION
+			);
+
+		}
+	}
+
 }

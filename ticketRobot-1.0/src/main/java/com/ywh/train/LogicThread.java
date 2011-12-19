@@ -77,7 +77,7 @@ public class LogicThread extends Thread {
 				rob.console(rs.getMsg());
 			} else {
 				rob.console(rs.getMsg());
-				JOptionPane.showMessageDialog(null, "输入的登录信息有误请重新输入");
+				JOptionPane.showMessageDialog(rob.getFrame(), "输入的登录信息有误请重新输入");
 				rob.reset();
 				return;
 			}
@@ -87,10 +87,10 @@ public class LogicThread extends Thread {
 					ui.getToCity(), ui.getStartDate(), ui.getRangDate());
 			if (allTrain.size() == 0) {
 				rs.setState(Result.FAIL);
-				rs.setMsg("未找到您选的日期及时间段从" + ui.getFromCity() + "到"
+				rs.setMsg("没有找到您选的日期及时间段从" + ui.getFromCity() + "到"
 						+ ui.getToCity() + "的可预订列车信息");
 				rob.console(rs.getMsg());
-				JOptionPane.showMessageDialog(null, "请重新输入列车信息");
+				JOptionPane.showMessageDialog(rob.getFrame(), "请重新输入列车信息");
 				rob.reset();
 				return;
 			} else {
@@ -106,13 +106,13 @@ public class LogicThread extends Thread {
 					+ train.getToStation() + train.getEndTime() + "]历时"
 					+ train.getTakeTime());
 			String seat = Util.getSeatAI(train);
-			rob.console("候选席别代码为:" + seat);
+			rob.console("候选席别为:" + Constants.getTrainSeatName(seat));
 			ui.setSeatType(seat);
 			rob.console("查询历史订单...");
 			rs = client.queryOrder();
 			rob.console(rs.getMsg());
 			if (rs.getState() == Result.HAVE_NO_PAY_TICKET) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(rob.getFrame(),
 						"对不起，您还有待支付的车票，请前往www.12306.cn支付\n" +
 						"后才能定其他的票");
 				rob.reset();
@@ -138,20 +138,20 @@ public class LogicThread extends Thread {
 			}
 			rob.console(rs.getMsg());
 			if (rs.getState() == Result.CANCEL_TIMES_TOO_MUCH) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(rob.getFrame(),
 						"由于您取消次数过多，今日将不能继续受理您的\n" +
 						"订票请求,如需购票请更换账号重新登录");
 				rob.reset();
 				return;
 			}
 			if (rs.getState() == Result.REPEAT_BUY_TICKET) {
-				JOptionPane.showMessageDialog(null, ui.getName()
+				JOptionPane.showMessageDialog(rob.getFrame(), ui.getName()
 						+ "已经买过票了，请更换购票人信息");
 				rob.reset();
 				return;
 			}
 			if (rs.getState() == Result.ERROR_CARD_NUMBER) {
-				JOptionPane.showMessageDialog(null, "请输入购票人[" + ui.getName()
+				JOptionPane.showMessageDialog(rob.getFrame(), "请输入购票人[" + ui.getName()
 						+ "]正确的身份证号码");
 				rob.reset();
 				return;
@@ -160,7 +160,7 @@ public class LogicThread extends Thread {
 			rs = client.queryOrder();
 			rob.console(rs.getMsg());
 			if (rs.getState() == Result.HAVE_NO_PAY_TICKET) {
-				JOptionPane.showMessageDialog(null,
+				JOptionPane.showMessageDialog(rob.getFrame(),
 						"恭喜您订票成功，请在30min内登录www.12306.cn完成付款操作");
 				rob.reset();
 				break;

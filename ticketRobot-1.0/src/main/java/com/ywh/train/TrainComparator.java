@@ -42,36 +42,42 @@ public class TrainComparator implements Comparator<TrainQueryInfo> {
 	public int compare(TrainQueryInfo t1, TrainQueryInfo t2) {
 		String t1Type = t1.getTrainNo().substring(0, 1);
 		String t2Type = t2.getTrainNo().substring(0, 1);
+		
+		// 检查有票否
+		if (Util.getSeatAI(t1) == null) {
+			return 1;
+		}
+		if (Util.getSeatAI(t2) == null) {
+			return -1;
+		}
 
-		// 动车优先
-		if (Constants.ISTRAINDFIRST) {
-			if (Constants.getTrainPriority(t1Type) > Constants
-					.getTrainPriority(t2Type)) {
-				return 1;
-			}
-			if (Constants.getTrainPriority(t1Type) < Constants
-					.getTrainPriority(t2Type)) {
-				return -1;
-			}
+		// 首先车次排
+		if (Constants.getTrainPriority(t1Type) > Constants
+				.getTrainPriority(t2Type)) {
+			return 1;
+		}
+		if (Constants.getTrainPriority(t1Type) < Constants
+				.getTrainPriority(t2Type)) {
+			return -1;
 		}
 
 		// 二等座优先
-		if (Constants.getTrainSeat(t1.getTwo_seat()) > Constants.getTrainSeat(t2
-				.getTwo_seat())) {
+		if (Constants.getTrainSeat(t1.getTwo_seat()) > Constants
+				.getTrainSeat(t2.getTwo_seat())) {
 			return -1;
 		}
-		if (Constants.getTrainSeat(t1.getTwo_seat()) < Constants.getTrainSeat(t2
-				.getTwo_seat())) {
+		if (Constants.getTrainSeat(t1.getTwo_seat()) < Constants
+				.getTrainSeat(t2.getTwo_seat())) {
 			return 1;
 		}
 
 		// 一等座
-		if (Constants.getTrainSeat(t1.getOne_seat()) > Constants.getTrainSeat(t2
-				.getOne_seat())) {
+		if (Constants.getTrainSeat(t1.getOne_seat()) > Constants
+				.getTrainSeat(t2.getOne_seat())) {
 			return -1;
 		}
-		if (Constants.getTrainSeat(t1.getOne_seat()) < Constants.getTrainSeat(t2
-				.getOne_seat())) {
+		if (Constants.getTrainSeat(t1.getOne_seat()) < Constants
+				.getTrainSeat(t2.getOne_seat())) {
 			return 1;
 		}
 
@@ -86,22 +92,22 @@ public class TrainComparator implements Comparator<TrainQueryInfo> {
 		}
 
 		// 硬座
-		if (Constants.getTrainSeat(t1.getHard_seat()) > Constants.getTrainSeat(t2
-				.getHard_seat())) {
+		if (Constants.getTrainSeat(t1.getHard_seat()) > Constants
+				.getTrainSeat(t2.getHard_seat())) {
 			return -1;
 		}
-		if (Constants.getTrainSeat(t1.getHard_seat()) < Constants.getTrainSeat(t2
-				.getHard_seat())) {
+		if (Constants.getTrainSeat(t1.getHard_seat()) < Constants
+				.getTrainSeat(t2.getHard_seat())) {
 			return 1;
 		}
 
 		// 无座
-		if (Constants.getTrainSeat(t1.getNone_seat()) > Constants.getTrainSeat(t2
-				.getNone_seat())) {
+		if (Constants.getTrainSeat(t1.getNone_seat()) > Constants
+				.getTrainSeat(t2.getNone_seat())) {
 			return -1;
 		}
-		if (Constants.getTrainSeat(t1.getNone_seat()) < Constants.getTrainSeat(t2
-				.getNone_seat())) {
+		if (Constants.getTrainSeat(t1.getNone_seat()) < Constants
+				.getTrainSeat(t2.getNone_seat())) {
 			return 1;
 		}
 
