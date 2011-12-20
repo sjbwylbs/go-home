@@ -23,10 +23,8 @@
 
 package com.ywh.train;
 
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Properties;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -40,55 +38,55 @@ import javax.script.ScriptException;
  * @since 2011-11-27
  * @version 1.0
  */
+@SuppressWarnings("restriction")
 public class TestJS {
 
-	public static Object callCityMd5(String city, String pwd)
-			throws Exception {
+	public static Object callCityMd5(String city, String pwd) {
 
-//		ResourceBundle bundle = ResourceBundle.getBundle("config");
-		String jsName = "alert.js";//bundle.getString("MD5JSFILE");
-
-		String funcName = "a1ert";
-		Object result = null;
 		String SCRIPT_NAME = "JavaScript";
+		String jsName = "alert.js";
+		String funcName = "a1ert";
+
+		Object result = null;
+		Reader scriptReader = null;
 		// Get the JavaScript engine
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine engine = manager.getEngineByName(SCRIPT_NAME);
-		if (engine == null) {
-			throw new ScriptException("Can not initialize " + SCRIPT_NAME
-					+ " engine!");
-		}
-
-		// Run *.js
-		Reader scriptReader = new InputStreamReader(ClassLoader.getSystemResourceAsStream(jsName));
-//				new FileInputStream(jsName), "utf-8");
 		try {
+			if (engine == null) {
+				throw new ScriptException("Can not initialize " + SCRIPT_NAME
+						+ " engine!");
+			}
+			scriptReader = new InputStreamReader(
+					ClassLoader.getSystemResourceAsStream(jsName));
 			engine.eval(scriptReader);
+			if (engine instanceof Invocable) {
+				Invocable invEngine = (Invocable) engine;
+				// Invoke a JavaScript function
+				result = invEngine.invokeFunction(funcName, city, pwd);
+				System.out.println("[JavaScript] result: " + result);
+			} else {
+				throw new ScriptException(
+						"Engine does not support Invocable interface!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		} finally {
-			if (null != scriptReader) {
-				scriptReader.close();
-				scriptReader = null;
+			try {
+				if (null != scriptReader) {
+					scriptReader.close();
+					scriptReader = null;
+				}
+			} catch (Exception e) {
 			}
 		}
 
-		// Invoke a JavaScript function
-		if (engine instanceof Invocable) {
-			Invocable invEngine = (Invocable) engine;
-			result = invEngine.invokeFunction(funcName, city, pwd);
-			System.out.println("[Java] result: " + result);
-			// System.out.println("    Java object: " +
-			// result.getClass().getName());
-		} else {
-			System.out.println("Engine does not support Invocable interface!");
-			throw new ScriptException(
-					"Engine does not support Invocable interface!");
-		}
 		return result;
 	}
-	
+
 	public static void main(String[] args) {
 		try {
-			for(int i=0; i<5; i++) {
+			for (int i = 0; i < 5; i++) {
 				callCityMd5("上海", "liusheng");
 			}
 		} catch (Exception e) {

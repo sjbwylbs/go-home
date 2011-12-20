@@ -25,7 +25,7 @@ public class OCR {
 	private static String tessPath = new File("tesseract").getAbsolutePath();
 
 	public static String read(byte[] image) {
-		File file = new File("code", System.currentTimeMillis()+"");
+		File file = new File("tesseract", System.currentTimeMillis()+"");
 		String randCode = "";
 		try {
 			DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));

@@ -66,7 +66,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.MaskFormatter;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -74,6 +76,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
 import tk.mystudio.ocr.OCR;
 
+import com.ywh.train.Config;
 import com.ywh.train.Constants;
 import com.ywh.train.LogicThread;
 import com.ywh.train.TrainClient;
@@ -179,6 +182,10 @@ public class RobTicket {
 			tcm.setMaxTotal(10);
 			tcm.getSchemeRegistry().register(sch);
 			this.httpClient = new DefaultHttpClient(tcm);
+			if (Config.isUseProxy()) {
+				 HttpHost proxy = new HttpHost(Config.getProxyIp(), Config.getProxyPort(), "http");
+	             this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+			}
 			this.client = new TrainClient(this.httpClient);
 		} catch (Exception ex) {
 			ex.printStackTrace();

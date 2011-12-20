@@ -56,7 +56,7 @@ public class TrainClient {
 			HttpResponse response = httpclient.execute(get);
 			HttpEntity entity = response.getEntity();
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-					entity.getContent()));
+					entity.getContent() , "UTF-8"));
 			String line = null;			
 			while ((line = br.readLine()) != null) {
 				if (line.indexOf("org.apache.struts.taglib.html.TOKEN") > -1) {
@@ -116,7 +116,7 @@ public class TrainClient {
 			log.debug(response.getStatusLine());
 			
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-					entity.getContent()));
+					entity.getContent() , "UTF-8"));
 			while ((br.readLine()) != null) {		
 //				System.out.println(line);
 			}
@@ -319,7 +319,7 @@ public class TrainClient {
 			HttpResponse response = httpclient.execute(httpget);
 			HttpEntity entity = response.getEntity();
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-					entity.getContent()));
+					entity.getContent(), "UTF-8"));
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				responseBody.append(line);
