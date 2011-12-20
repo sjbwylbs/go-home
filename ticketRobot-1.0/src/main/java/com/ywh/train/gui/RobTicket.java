@@ -60,6 +60,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
@@ -146,6 +147,7 @@ public class RobTicket {
 	 */
 	private void initNetwork() {
 		try {
+			//**
 			SSLContext ctx = SSLContext.getInstance("TLS");
 			X509TrustManager tm = new X509TrustManager() {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
@@ -172,6 +174,7 @@ public class RobTicket {
 			ctx.init(null, new TrustManager[] { tm }, null);
 			SSLSocketFactory ssf = new SSLSocketFactory(ctx);
 			Scheme sch = new Scheme("https", 443, ssf);
+			//*/
 			ThreadSafeClientConnManager tcm = new ThreadSafeClientConnManager();
 			tcm.setMaxTotal(10);
 			tcm.getSchemeRegistry().register(sch);
@@ -194,6 +197,7 @@ public class RobTicket {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);
+		ToolTipManager.sharedInstance().setInitialDelay(0);
 		
 		panel = new JPanel();
 		panel.setBounds(10, 22, 467, 54);
@@ -207,6 +211,7 @@ public class RobTicket {
 		label.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtUsername = new JTextField();
+		txtUsername.setToolTipText("您在12306上注册的用户名");
 		txtUsername.setBounds(67, 23, 84, 21);
 		panel.add(txtUsername);
 		txtUsername.setColumns(10);
@@ -217,6 +222,7 @@ public class RobTicket {
 		label_1.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtPassword = new JPasswordField();
+		txtPassword.setToolTipText("忘了什么也不要忘了密码");
 		txtPassword.setBounds(204, 23, 66, 21);
 		panel.add(txtPassword);
 		txtPassword.setColumns(10);
@@ -226,6 +232,7 @@ public class RobTicket {
 		panel.add(label_2);
 		label_2.setHorizontalAlignment(SwingConstants.RIGHT);
 		txtRandCode = new JTextField();
+		txtRandCode.setToolTipText("单击右侧验证码图片可更换验证码");
 		txtRandCode.setBounds(328, 23, 66, 21);
 		panel.add(txtRandCode);
 		txtRandCode.setColumns(10);
@@ -234,6 +241,7 @@ public class RobTicket {
 		
 		
 		lblRc = new JLabel("Click Me");
+		lblRc.setToolTipText("Click me!");
 		lblRc.setBounds(396, 23, 61, 21);
 		panel.add(lblRc);
 		lblRc.setIcon(new ImageIcon(imageByte));
@@ -259,6 +267,7 @@ public class RobTicket {
 		label_3.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtUserID = new JTextField();
+		txtUserID.setToolTipText("乘车人身份证号码");
 		txtUserID.setBounds(77, 26, 201, 21);
 		panel_1.add(txtUserID);
 		txtUserID.setColumns(10);
@@ -269,6 +278,7 @@ public class RobTicket {
 		label_5.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtName = new JTextField();
+		txtName.setToolTipText("乘车人姓名");
 		txtName.setBounds(338, 26, 66, 21);
 		panel_1.add(txtName);
 		txtName.setColumns(10);		
@@ -285,6 +295,7 @@ public class RobTicket {
 			e1.printStackTrace();
 		}
 		txtStartDate = new JFormattedTextField(mf);
+		txtStartDate.setToolTipText("乘车日期格式为:yyyy-MM-dd");
 		txtStartDate.setBounds(77, 82, 84, 21);
 		panel_1.add(txtStartDate);
 		txtStartDate.setColumns(10);
@@ -295,6 +306,7 @@ public class RobTicket {
 		label_4.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtFromStation = new JTextField();
+		txtFromStation.setToolTipText("乘车人现在的位置");
 		txtFromStation.setBounds(212, 82, 66, 21);
 		panel_1.add(txtFromStation);
 		txtFromStation.setColumns(10);
@@ -305,6 +317,7 @@ public class RobTicket {
 		label_7.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		txtToStation = new JTextField();
+		txtToStation.setToolTipText("乘车人想去的地方");
 		txtToStation.setBounds(338, 82, 66, 21);
 		panel_1.add(txtToStation);
 		txtToStation.setColumns(10);
@@ -319,6 +332,7 @@ public class RobTicket {
 			e1.printStackTrace();
 		}
 		txtPhone = new JFormattedTextField(mf);
+		txtPhone.setToolTipText("输入用来接收订票信息的手机号码");
 		txtPhone.setBounds(77, 54, 84, 21);
 		panel_1.add(txtPhone);
 		txtPhone.setColumns(10);
@@ -328,18 +342,22 @@ public class RobTicket {
 		panel_1.add(label_9);
 		label_9.setHorizontalAlignment(SwingConstants.RIGHT);
 		BoxoRang = new JComboBox(Constants.trainRang.keySet().toArray());
+		BoxoRang.setToolTipText("默认是上午，改为[全天]可能订到票的几率更大");
 		BoxoRang.setBounds(338, 54, 66, 21);
 		panel_1.add(BoxoRang);
 		
 		boxkDFirst = new JCheckBox("动车优先");
+		boxkDFirst.setToolTipText("优先预定动车票");
 		boxkDFirst.setBounds(18, 199, 84, 23);
 		frame.getContentPane().add(boxkDFirst);
 		
 		boxkSleepFirst = new JCheckBox("卧铺优先");
+		boxkSleepFirst.setToolTipText("优先预定硬卧车票");
 		boxkSleepFirst.setBounds(113, 199, 93, 23);
 		frame.getContentPane().add(boxkSleepFirst);
 		
 		boxkIsAuto = new JCheckBox("自动识别验证码");
+		boxkIsAuto.setToolTipText("可免去重复输入验证码的麻烦");
 		boxkIsAuto.setBounds(219, 199, 133, 23);
 		frame.getContentPane().add(boxkIsAuto);
 		
@@ -362,6 +380,7 @@ public class RobTicket {
 		textArea.setLineWrap(true);
 		
 		btnSORE = new JButton("开始");
+		btnSORE.setToolTipText("成功与否在此一举!");
 		btnSORE.setBounds(379, 199, 73, 23);
 		frame.getContentPane().add(btnSORE);
 		
