@@ -21,7 +21,7 @@
  * so by contacting the author: talentyao@foxmail.com
  ***************************************************/
  
-package com.ywh.train;
+package com.ywh.train.bean;
 
 /**
  * 请求返回结果

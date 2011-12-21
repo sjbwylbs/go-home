@@ -5,7 +5,7 @@
  * 文件名：OrderInfo.java
  **************************************************
  */
-package com.ywh.train;
+package com.ywh.train.bean;
 
 /**
  * 功能描述

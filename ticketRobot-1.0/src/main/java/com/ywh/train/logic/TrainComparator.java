@@ -21,9 +21,13 @@
  * so by contacting the author: talentyao@foxmail.com
  ***************************************************/
 
-package com.ywh.train;
+package com.ywh.train.logic;
 
 import java.util.Comparator;
+
+import com.ywh.train.Constants;
+import com.ywh.train.Util;
+import com.ywh.train.bean.TrainQueryInfo;
 
 /**
  * 列车排序

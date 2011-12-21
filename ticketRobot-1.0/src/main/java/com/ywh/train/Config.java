@@ -29,7 +29,7 @@ public class Config {
 			prop.load(isr);
 			isr.close();
 		} catch (IOException e) {
-			System.err.println("加载配置文件出错 " + e);
+			System.err.println("加载配置文件出错  " + e);
 		} finally {
 			try {
 				fis.close();

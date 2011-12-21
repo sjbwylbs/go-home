@@ -21,7 +21,7 @@
  * so by contacting the author: talentyao@foxmail.com
  ***************************************************/
 
-package com.ywh.train;
+package com.ywh.train.logic;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -34,6 +34,11 @@ import javax.swing.JOptionPane;
 
 import tk.mystudio.ocr.OCR;
 
+import com.ywh.train.Constants;
+import com.ywh.train.Util;
+import com.ywh.train.bean.Result;
+import com.ywh.train.bean.TrainQueryInfo;
+import com.ywh.train.bean.UserInfo;
 import com.ywh.train.gui.RobTicket;
 
 /**

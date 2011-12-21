@@ -40,6 +40,8 @@ import org.htmlparser.Tag;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.visitors.NodeVisitor;
 
+import com.ywh.train.bean.TrainQueryInfo;
+
 /**
  * 功能描述
  * 

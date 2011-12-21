@@ -1,4 +1,4 @@
-package com.ywh.train;
+package com.ywh.train.logic;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +29,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
+import com.ywh.train.Constants;
+import com.ywh.train.Util;
+import com.ywh.train.bean.Result;
+import com.ywh.train.bean.TrainQueryInfo;
+import com.ywh.train.bean.UserInfo;
+
 /**
  * 车票订购网络处理core
  */
@@ -48,7 +54,7 @@ public class TrainClient {
 	 * @return
 	 */
 	 
-	String getToken() {
+	public String getToken() {
 		log.debug("-------------------get token start-------------------");
 		HttpGet get = new HttpGet(Constants.GET_TOKEN_URL);
 		String token = null;

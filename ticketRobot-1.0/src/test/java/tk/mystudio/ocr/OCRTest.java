@@ -17,7 +17,7 @@ import javax.swing.JLabel;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.ywh.train.Constants;
-import com.ywh.train.TrainClient;
+import com.ywh.train.logic.TrainClient;
 
 /**
  * 功能描述

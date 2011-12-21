@@ -21,7 +21,7 @@
  * so by contacting the author: talentyao@foxmail.com
  ***************************************************/
 
-package com.ywh.train;
+package com.ywh.train.bean;
 
 import java.io.Serializable;
 

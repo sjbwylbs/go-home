@@ -95,7 +95,6 @@ public class OCR {
 		}
 
 		new File(outputFile.getAbsolutePath() + ".txt").delete();
-		// logger.info("图像识别结果:{}", strB);
 		result = strB.toString().trim();
 		return result;
 	}
