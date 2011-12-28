@@ -538,7 +538,7 @@ public class RobTicket {
 	 * @since 2011-12-21 
 	 * @version 1.0
 	 */
-	class ExitAction implements ActionListener {
+	static class ExitAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			System.exit(0);
 		}
@@ -595,9 +595,10 @@ public class RobTicket {
 	 * @since 2011-12-21 
 	 * @version 1.0
 	 */
-	class AboutAction extends AbstractAction {
+	static class AboutAction extends AbstractAction {
+		
 		/**字段注释*/
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = -1097396738396411124L;
 		
 		JFrame parentsFrame;
 		URL img = ResManager.getFileURL("logo.jpg"); //$NON-NLS-1$
@@ -624,9 +625,10 @@ public class RobTicket {
 	 * @since 2011-12-21 
 	 * @version 1.0
 	 */
-	class UseSkillAction extends AbstractAction {
+	static class UseSkillAction extends AbstractAction {
+		
 		/**字段注释*/
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = -7920608352042404436L;
 		
 		JFrame parentsFrame;
 		URL img = ResManager.getFileURL("logo.jpg"); //$NON-NLS-1$

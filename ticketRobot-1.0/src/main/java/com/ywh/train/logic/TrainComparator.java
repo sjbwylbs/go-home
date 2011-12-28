@@ -23,6 +23,7 @@
 
 package com.ywh.train.logic;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import com.ywh.train.Constants;
@@ -36,7 +37,10 @@ import com.ywh.train.bean.TrainQueryInfo;
  * @since 2011-11-27
  * @version 1.0
  */
-public class TrainComparator implements Comparator<TrainQueryInfo> {
+public class TrainComparator implements Comparator<TrainQueryInfo>,Serializable {
+
+	/**字段注释*/
+	private static final long serialVersionUID = 5183117530415664784L;
 
 	/**
 	 * override 方法

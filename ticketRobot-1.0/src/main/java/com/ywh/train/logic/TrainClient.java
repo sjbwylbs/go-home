@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.text.AbstractDocument.BranchElement;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -58,10 +59,11 @@ public class TrainClient {
 		log.debug("-------------------get token start-------------------");
 		HttpGet get = new HttpGet(Constants.GET_TOKEN_URL);
 		String token = null;
+		BufferedReader br = null;
 		try {
 			HttpResponse response = httpclient.execute(get);
 			HttpEntity entity = response.getEntity();
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+			br = new BufferedReader(new InputStreamReader(
 					entity.getContent() , "UTF-8"));
 			String line = null;			
 			while ((line = br.readLine()) != null) {
@@ -71,7 +73,15 @@ public class TrainClient {
 			}
 		} catch (Exception e) {
 			log.error(e);
-		} 
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		if (token != null) {
 			int start = token.indexOf("value=\"");
 			int end = token.indexOf("\"></div>");
@@ -113,6 +123,7 @@ public class TrainClient {
 		formparams.add(new BasicNameValuePair("train_date", startDate)); //"2011-11-28"
 		formparams.add(new BasicNameValuePair("train_pass_type", "QB"));
 		formparams.add(new BasicNameValuePair("train_start_time", train.getStartTime())); //"09:08"
+		BufferedReader br = null;
 		try {
 			UrlEncodedFormEntity uef = new UrlEncodedFormEntity(formparams, HTTP.UTF_8);
 			post.setEntity(uef);
@@ -121,15 +132,23 @@ public class TrainClient {
 			
 			log.debug(response.getStatusLine());
 			
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+			br = new BufferedReader(new InputStreamReader(
 					entity.getContent() , "UTF-8"));
-			while ((br.readLine()) != null) {		
+			while ((br.readLine()) != null) {
 //				System.out.println(line);
 			}
 			rs.setState(Result.SUCC);
-			rs.setMsg(response.getStatusLine().toString());
+			rs.setMsg(response.getStatusLine().toString());			
 		} catch (Exception e) {
 			log.error(e);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		log.debug("-------------------book end-------------------");
 		return rs;
@@ -321,10 +340,11 @@ public class TrainClient {
 		Result rs = new Result();
 		HttpGet httpget = new HttpGet(Constants.QUERY_ORDER_URL);
 		StringBuilder responseBody = new StringBuilder();
+		BufferedReader br = null;
 		try {
 			HttpResponse response = httpclient.execute(httpget);
 			HttpEntity entity = response.getEntity();
-			BufferedReader br = new BufferedReader(new InputStreamReader(
+			br = new BufferedReader(new InputStreamReader(
 					entity.getContent(), "UTF-8"));
 			String line = null;
 			while ((line = br.readLine()) != null) {
@@ -332,6 +352,14 @@ public class TrainClient {
 			}
 		} catch (Exception e) {
 			log.error(e);
+		} finally {
+			try {
+				if (br != null) {
+					br.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		String msg = Util.removeTagFromHtml(responseBody.toString());
 		if (!msg.isEmpty()) {
