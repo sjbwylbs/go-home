@@ -14,5 +14,21 @@ package com.ywh.train.bean;
  * @version 1.0
  */
 public class OrderInfo {
+	int c;
 
+	/**
+	 * @return Returns the c.
+	 */
+	public int getC() {
+		return c;
+	}
+
+	/**
+	 * @param c The c to set.
+	 */
+	public void setC(int c) {
+		this.c = c;
+	}
+	
+	
 }
