@@ -14,7 +14,34 @@ package com.ywh.train.bean;
  * @version 1.0
  */
 public class OrderInfo {
-
+	int a;
+	int b;
+	/**
+	 * @return Returns the a.
+	 */
+	public int getA() {
+		return a;
+	}
+	/**
+	 * @param a The a to set.
+	 */
+	public void setA(int a) {
+		this.a = a;
+	}
+	/**
+	 * @return Returns the b.
+	 */
+	public int getB() {
+		return b;
+	}
+	/**
+	 * @param b The b to set.
+	 */
+	public void setB(int b) {
+		this.b = b;
+	}
+	
+	
 	int d;
 
 	/**
