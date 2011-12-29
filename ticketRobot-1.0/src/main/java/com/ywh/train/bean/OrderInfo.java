@@ -14,21 +14,24 @@ package com.ywh.train.bean;
  * @version 1.0
  */
 public class OrderInfo {
-	int c;
+
+	int d;
 
 	/**
-	 * @return Returns the c.
+	 * @return Returns the d.
 	 */
-	public int getC() {
-		return c;
+	public int getD() {
+		return d;
 	}
 
 	/**
-	 * @param c The c to set.
+	 * @param d The d to set.
 	 */
-	public void setC(int c) {
-		this.c = c;
+	public void setD(int d) {
+		this.d = d;
 	}
+	
+	
 	
 	
 }
