@@ -53,6 +53,8 @@ public class OCR {
 		cmd.add(outputFile.getName());
 		cmd.add(LANG_OPTION);
 		cmd.add("eng");
+		cmd.add("nobatch");
+		cmd.add("digits");
 
 		ProcessBuilder pb = new ProcessBuilder();
 		pb.directory(imageFile.getParentFile());
