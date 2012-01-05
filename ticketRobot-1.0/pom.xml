@@ -102,28 +102,6 @@
 			<artifactId>httpclient</artifactId>
 			<version>${httpclient-version}</version>
 		</dependency>
-		<!-- jcaptcha -->
-		<dependency>
-			<groupId>com.octo.captcha</groupId>
-			<artifactId>jcaptcha</artifactId>
-			<version>${jcaptcha-version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.servlet</groupId>
-					<artifactId>servlet-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.jhlabs</groupId>
-					<artifactId>imaging</artifactId>
-				</exclusion>
-			</exclusions>			
-		</dependency>
-		<!-- imageio -->
-		<dependency>
-			<groupId>javax.media</groupId>
-			<artifactId>jai_imageio</artifactId>
-			<version>${imageio-version}</version>
-		</dependency>
 		<!-- log -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
