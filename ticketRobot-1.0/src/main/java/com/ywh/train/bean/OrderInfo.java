@@ -1,10 +1,25 @@
 /**************************************************
- * 上海美峰数码科技有限公司(http://www.morefuntek.com)
- * 模块名称: OrderInfo
- * 功能描述：
- * 文件名：OrderInfo.java
- **************************************************
- */
+ * Filename: OrderInfo.java
+ * Version: v1.0
+ * CreatedDate: 2011-11-24
+ * Copyright (C) 2011 By cafebabe.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see http://www.gnu.org/licenses/.
+ *
+ * If you would like to negotiate alternate licensing terms, you may do
+ * so by contacting the author: talentyao@foxmail.com
+ ***************************************************/
 package com.ywh.train.bean;
 
 /**
@@ -14,51 +29,5 @@ package com.ywh.train.bean;
  * @version 1.0
  */
 public class OrderInfo {
-	int a;
-	int b;
-	/**
-	 * @return Returns the a.
-	 */
-	public int getA() {
-		return a;
-	}
-	/**
-	 * @param a The a to set.
-	 */
-	public void setA(int a) {
-		this.a = a;
-	}
-	/**
-	 * @return Returns the b.
-	 */
-	public int getB() {
-		return b;
-	}
-	/**
-	 * @param b The b to set.
-	 */
-	public void setB(int b) {
-		this.b = b;
-	}
-	
-	
-	int d;
 
-	/**
-	 * @return Returns the d.
-	 */
-	public int getD() {
-		return d;
-	}
-
-	/**
-	 * @param d The d to set.
-	 */
-	public void setD(int d) {
-		this.d = d;
-	}
-	
-	
-	
-	
 }
