@@ -93,7 +93,8 @@ public class OCR {
 			default:
 				msg = "Errors occurred.";
 			}
-			throw new RuntimeException(msg);
+			System.err.println("验证码获取失败：" + msg);
+//			throw new RuntimeException(msg);
 		}
 
 		new File(outputFile.getAbsolutePath() + ".txt").delete();

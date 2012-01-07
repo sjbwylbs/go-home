@@ -70,9 +70,19 @@ public class Config {
 		return Integer.parseInt(getProperty("port"));
 	}
 	
+	public static String getTrainCode() {
+		return getProperty("traincode").trim();
+	}
+	
+	public static int getSleepTime() {
+		return Integer.parseInt(getProperty("sleeptime"));
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(isUseProxy());
 		System.out.println(getProxyIp());
 		System.out.println(getProxyPort());
+		System.out.println(getSleepTime());
+		System.out.println(getTrainCode());
 	}
 }

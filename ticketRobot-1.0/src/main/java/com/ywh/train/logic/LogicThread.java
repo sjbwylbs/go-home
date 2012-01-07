@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 
 import tk.mystudio.ocr.OCR;
 
+import com.ywh.train.Config;
 import com.ywh.train.Constants;
 import com.ywh.train.Util;
 import com.ywh.train.bean.Result;
@@ -74,113 +75,122 @@ public class LogicThread extends Thread {
 	@Override
 	public void run() {
 		while (!isEnd) {
+			boolean isLoginSuc = false;
 			Result rs = new Result();
-			rob.console("用户:" + ui.getUserName() + " 开始登录...");
-			rs = client.login(ui.getUserName(), ui.getPassword(),
-					ui.getRandCode());
-			if (rs.getState() == Result.SUCC) {
-				rob.console(rs.getMsg());
-			} else {
-				rob.console(rs.getMsg());
-				JOptionPane.showMessageDialog(rob.getFrame(), "输入的登录信息有误请重新输入");
-				rob.reset();
-				return;
-			}
-			String randCode = null;
-			rob.console("正在查询...");
-			List<TrainQueryInfo> allTrain = client.queryTrain(ui.getFromCity(),
-					ui.getToCity(), ui.getStartDate(), ui.getRangDate());
-			if (allTrain.size() == 0) {
-				rs.setState(Result.FAIL);
-				rs.setMsg("没有找到您选的日期及时间段从" + ui.getFromCity() + "到"
-						+ ui.getToCity() + "的可预订列车信息");
-				rob.console(rs.getMsg());
-				JOptionPane.showMessageDialog(rob.getFrame(), "请重新输入列车信息");
-				rob.reset();
-				return;
-			} else {
-				rs.setState(Result.SUCC);
-				Collections.sort(allTrain, new TrainComparator());
-				rs.setMsg("共找到您选定日期及时间段从" + ui.getFromCity() + "到"
-						+ ui.getToCity() + "的可预订列车" + allTrain.size() + "趟");
-				rob.console(rs.getMsg());
-			}
-			TrainQueryInfo train = allTrain.get(0);
-			rob.console("候选列车为:" + train.getTrainNo() + " 从["
-					+ train.getFromStation() + train.getStartTime() + "]开往["
-					+ train.getToStation() + train.getEndTime() + "]历时"
-					+ train.getTakeTime());
-			String seat = Util.getSeatAI(train);
-			rob.console("候选席别为:" + Constants.getTrainSeatName(seat));
-			ui.setSeatType(seat);
-			rob.console("查询历史订单...");
-			rs = client.queryOrder();
-			rob.console(rs.getMsg());
-			if (rs.getState() == Result.HAVE_NO_PAY_TICKET) {
-				JOptionPane.showMessageDialog(rob.getFrame(),
-						"对不起，您还有待支付的车票，请前往www.12306.cn支付\n" +
-						"后才能定其他的票");
-				rob.reset();
-				return;
-			}
-			rob.console("开始预定...");
-			rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
-			randCode = getRandCodeDailog();
-			String token = client.getToken();
-			rob.console("提交订单...");
-			rs = client.submiOrder(randCode, token, ui, train);
-			while (rs.getState() == Result.RAND_CODE_ERROR) {
-				rob.console(rs.getMsg());
-				rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
-				randCode = getRandCodeDailog();
-				token = client.getToken();
-				rs = client.submiOrder(randCode, token, ui, train);
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			while (!isLoginSuc && !isEnd) {
+				rob.console("用户:" + ui.getUserName() + " 开始登录...");
+				rs = client.login(ui.getUserName(), ui.getPassword(),
+						ui.getRandCode());
+				if (rs.getState() == Result.SUCC) {
+					rob.console(rs.getMsg());
+					isLoginSuc = true;
+				} else {
+					rob.console(rs.getMsg());
+					rob.reset(false);
+					ui.setRandCode(getRandCodeDailog(Constants.LOGIN_CODE_URL));
 				}
 			}
-			rob.console(rs.getMsg());
-			if (rs.getState() == Result.CANCEL_TIMES_TOO_MUCH) {
-				JOptionPane.showMessageDialog(rob.getFrame(),
-						"由于您取消次数过多，今日将不能继续受理您的\n" +
-						"订票请求,如需购票请更换账号重新登录");
-				rob.reset();
-				return;
+			while (isLoginSuc && !isEnd) {
+				String randCode = null;
+				rob.resetUserInfo();
+				rob.console("正在查询车次...");
+				List<TrainQueryInfo> allTrain = client.queryTrain(
+						ui.getFromCity(), ui.getToCity(), ui.getStartDate(),
+						ui.getRangDate());
+				if (allTrain.size() == 0) {
+					rs.setState(Result.FAIL);
+					rs.setMsg("没有找到您选的日期及时间段从" + ui.getFromCity() + "到"
+							+ ui.getToCity() + "的可预订列车信息，请您填写正确的信息以便程序继续尝试！");
+					rob.console(rs.getMsg());
+					rob.resetUserInfo();
+				} else {
+					rs.setState(Result.SUCC);
+					Collections.sort(allTrain, new TrainComparator());
+					rs.setMsg("共找到您选定日期及时间段从" + ui.getFromCity() + "到"
+							+ ui.getToCity() + "的可预订列车" + allTrain.size() + "趟");
+					rob.console(rs.getMsg());
+				}
+				TrainQueryInfo train = null;
+				String specificTrain = Config.getTrainCode();
+				if (!specificTrain.isEmpty()) {
+					for (TrainQueryInfo tqi : allTrain) {
+						if(tqi.getTrainCode().equalsIgnoreCase(specificTrain)) {
+							train = tqi;
+							if (Constants.getTrainSeatName(Util.getSeatAI(train)) == null) {
+								rob.console("您指定的车次[" + specificTrain + "]无票！");
+								train = null;
+							}
+							break;
+						}
+					}
+					rob.console("可预订车次中未找到您指定的车次:" + specificTrain);
+				} 
+				if (train == null ){
+					train = allTrain.get(0);
+				}
+				rob.console("候选列车为:" + train.getTrainNo() + " 从["
+						+ train.getFromStation() + train.getStartTime()
+						+ "]开往[" + train.getToStation() + train.getEndTime()
+						+ "]历时" + train.getTakeTime());
+				String seat = Util.getSeatAI(train);
+				rob.console("候选席别为:" + Constants.getTrainSeatName(seat));
+				ui.setSeatType(seat);
+
+				rob.console("开始预定...");
+				rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
+				randCode = getRandCodeDailog(Constants.ORDER_CODE_URL);
+				String token = client.getToken();
+				rob.console("提交订单...");
+				rs = client.submiOrder(randCode, token, ui, train);
+				while (rs.getState() == Result.RAND_CODE_ERROR) {
+					rob.console(rs.getMsg());
+					rs = client
+							.book(ui.getRangDate(), ui.getStartDate(), train);
+					randCode = getRandCodeDailog(Constants.ORDER_CODE_URL);
+					token = client.getToken();
+					rs = client.submiOrder(randCode, token, ui, train);
+					Util.waitMoment(500);
+					rob.resetUserInfo();
+				}
+				rob.console(rs.getMsg());
+				if (rs.getState() == Result.CANCEL_TIMES_TOO_MUCH) {
+					JOptionPane.showMessageDialog(rob.getFrame(),
+							"由于您取消次数过多，今日将不能继续受理您的\n" + "订票请求,如需购票请更换账号重新登录");
+					rob.reset(true);
+					return;
+				}
+				if (rs.getState() == Result.REPEAT_BUY_TICKET) {
+					JOptionPane.showMessageDialog(rob.getFrame(), ui.getName()
+							+ "已经买过票了，请更换购票人信息");
+					rob.reset(true);
+					return;
+				}
+				if (rs.getState() == Result.ERROR_CARD_NUMBER) {
+					String info = "请输入购票人[" + ui.getName() + "]正确的身份证号码，以便程序继续尝试！";
+					rob.console(info);
+					rob.resetUserInfo();
+					continue;
+				}
+				rob.console("查询订单...");
+				rs = client.queryOrder();
+				rob.console(rs.getMsg());
+				if (rs.getState() == Result.HAVE_NO_PAY_TICKET) {
+					JOptionPane.showMessageDialog(rob.getFrame(),
+							"恭喜您订票成功，请在30min内登录www.12306.cn完成付款操作");
+					rob.reset(true);
+					break;
+				}
+				continue;
 			}
-			if (rs.getState() == Result.REPEAT_BUY_TICKET) {
-				JOptionPane.showMessageDialog(rob.getFrame(), ui.getName()
-						+ "已经买过票了，请更换购票人信息");
-				rob.reset();
-				return;
-			}
-			if (rs.getState() == Result.ERROR_CARD_NUMBER) {
-				JOptionPane.showMessageDialog(rob.getFrame(), "请输入购票人[" + ui.getName()
-						+ "]正确的身份证号码");
-				rob.reset();
-				return;
-			}
-			rob.console("查询订单...");
-			rs = client.queryOrder();
-			rob.console(rs.getMsg());
-			if (rs.getState() == Result.HAVE_NO_PAY_TICKET) {
-				JOptionPane.showMessageDialog(rob.getFrame(),
-						"恭喜您订票成功，请在30min内登录www.12306.cn完成付款操作");
-				rob.reset();
-				break;
-			}
-			rob.reset();
-			rob.console("订票逻辑结束");
-			break;
 		}
+		rob.console("订票逻辑结束");
 	}
 
 	/**
 	 * 获得自动识别的验证or用户输入
 	 */
-	public String getRandCodeDailog() {
-		byte[] image = client.getCodeByte(Constants.ORDER_CODE_URL);
+	public String getRandCodeDailog(String url) {
+		byte[] image = client.getCodeByte(url);
 		String randCodeByRob = OCR.read(image);
 		if (!Constants.ISAUTOCODE) {
 			JLabel label = new JLabel(new ImageIcon(), JLabel.CENTER);
@@ -188,10 +198,12 @@ public class LogicThread extends Thread {
 			label.setText(" 自动识别为:" + randCodeByRob);
 			CodeMouseAdapter cma = new CodeMouseAdapter(randCodeByRob);
 			label.addMouseListener(cma);
-			String input = JOptionPane.showInputDialog(rob.getFrame(), label, "请输入验证码",
-					JOptionPane.DEFAULT_OPTION);
+			String input = JOptionPane.showInputDialog(rob.getFrame(), label,
+					"请输入验证码", JOptionPane.DEFAULT_OPTION);
 			if (input == null || input.isEmpty()) {
 				randCodeByRob = cma.getRandCodeByRob();
+			} else {
+				randCodeByRob = input;
 			}
 		}
 		return randCodeByRob;

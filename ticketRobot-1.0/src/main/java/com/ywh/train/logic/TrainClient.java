@@ -34,7 +34,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.text.AbstractDocument.BranchElement;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -342,9 +341,9 @@ public class TrainClient {
 		} else {
 			log.warn("用户:"  + username + " 登录失败");
 			log.warn(info);
-			log.info(responseBody);
 			rs.setState(Result.FAIL);
-			rs.setMsg("用户:"  + username + " 登录失败");
+//			System.err.println(Util.getLoginErrorMessage(responseBody));
+			rs.setMsg("用户:"  + username + " 登录失败," + Util.getLoginErrorMessage(info));
 		}
 		log.debug("-------------------login end---------------------");
 		return rs;

@@ -63,12 +63,8 @@ public class Util {
 	public static final String DATE_PART_FORMAT = "yyyy-MM-dd";
 	public static final String TIME_PART_FORMAT = "HH:mm:ss.SSS";
 
-//	public final static DateFormat default_datetime_format = new SimpleDateFormat(
-//			DEFAULT_PATTERN);
 	public final static DateFormat default_date_format = new SimpleDateFormat(
 			DATE_PART_FORMAT);
-//	public final static DateFormat default_time_format = new SimpleDateFormat(
-//			TIME_PART_FORMAT);
 
 	/**
 	 * 返回当前日期时间
@@ -253,6 +249,16 @@ public class Util {
 		return temp;
 	}
 	
+	public static String getLoginErrorMessage(String content) {
+		int beginIndex = content.indexOf("换一张 &nbsp; ");
+		int endIndex = content.indexOf(" &nbsp; &nbsp; 登录");
+		String subStr = "ERROR";
+		if (beginIndex+11 < endIndex) {
+			subStr = content.substring(beginIndex + 11, endIndex);
+		}
+		return subStr;
+	}
+	
 	public static int getHour2Min(String hour) {
 		int min = 0;
 		String hm[] = hour.split(":");
@@ -317,6 +323,18 @@ public class Util {
 	
 	public static String formatInfo(String info) {
 		return getCurDateTime() + " : " + info + "\n";
+	}
+	
+
+	/**
+	 * 线程等待指定时间
+	 */
+	public static void waitMoment(long mi) {
+		try {
+			Thread.sleep(mi);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 // 	public static void main(String[] args) {
