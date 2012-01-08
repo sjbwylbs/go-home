@@ -138,6 +138,7 @@ public class LogicThread extends Thread {
 				rob.console("候选席别为:" + Constants.getTrainSeatName(seat));
 				ui.setSeatType(seat);
 				if (ui.getSeatType() == null)  {
+					rob.console("待预订的车次[" + train.getTrainCode() + "]无票！");
 					Util.waitMoment(5000);
 					continue;
 				}
