@@ -112,20 +112,18 @@ public class LogicThread extends Thread {
 				}
 				TrainQueryInfo train = null;
 				String specificTrain = Config.getTrainCode();
-				if (!specificTrain.isEmpty()) {
-					for (TrainQueryInfo tqi : allTrain) {
-						if(tqi.getTrainCode().equalsIgnoreCase(specificTrain)) {
-							train = tqi;
-							if (Constants.getTrainSeatName(Util.getSeatAI(train)) == null) {
-								rob.console("您指定的车次[" + specificTrain + "]无票！");
-								train = null;
-							}
-							break;
+				for (TrainQueryInfo tqi : allTrain) {
+					if(tqi.getTrainCode().equalsIgnoreCase(specificTrain)) {
+						train = tqi;
+						if (Constants.getTrainSeatName(Util.getSeatAI(train)) == null) {
+							rob.console("您指定的车次[" + specificTrain + "]无票！");
+							train = null;
 						}
+						break;
 					}
-					rob.console("可预订车次中未找到您指定的车次:" + specificTrain);
 				} 
 				if (train == null ){
+					rob.console("可预订车次中未找到您指定的车次:" + specificTrain);
 					train = allTrain.get(0);
 				}
 				rob.console("候选列车为:" + train.getTrainNo() + " 从["
@@ -151,6 +149,7 @@ public class LogicThread extends Thread {
 					rs = client.submiOrder(randCode, token, ui, train);
 					Util.waitMoment(500);
 					rob.resetUserInfo();
+					continue;
 				}
 				rob.console(rs.getMsg());
 				if (rs.getState() == Result.CANCEL_TIMES_TOO_MUCH) {
