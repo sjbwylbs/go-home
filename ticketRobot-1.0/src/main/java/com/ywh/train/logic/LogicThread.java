@@ -124,6 +124,10 @@ public class LogicThread extends Thread {
 				} 
 				if (train == null ){
 					rob.console("可预订车次中未找到您指定的车次:" + specificTrain);
+					if (allTrain.isEmpty()) {
+						Util.waitMoment(3000);
+						continue;
+					}
 					train = allTrain.get(0);
 				}
 				rob.console("候选列车为:" + train.getTrainNo() + " 从["
@@ -133,7 +137,10 @@ public class LogicThread extends Thread {
 				String seat = Util.getSeatAI(train);
 				rob.console("候选席别为:" + Constants.getTrainSeatName(seat));
 				ui.setSeatType(seat);
-
+				if (ui.getSeatType() == null)  {
+					Util.waitMoment(5000);
+					continue;
+				}
 				rob.console("开始预定...");
 				rs = client.book(ui.getRangDate(), ui.getStartDate(), train);
 				randCode = getRandCodeDailog(Constants.ORDER_CODE_URL);

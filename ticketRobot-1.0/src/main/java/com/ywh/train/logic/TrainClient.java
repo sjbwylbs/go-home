@@ -289,14 +289,15 @@ public class TrainClient {
 		HttpGet get = new HttpGet(Constants.QUERY_TRAIN_URL + URLEncodedUtils.format(parameters, HTTP.UTF_8));
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
 		String responseBody = null;
+		List<TrainQueryInfo> all = new ArrayList<TrainQueryInfo>();
 		try {
 			responseBody = httpclient.execute(get, responseHandler);
+			all = Util.parserQueryInfo(responseBody); 
+			for(TrainQueryInfo tInfo : all) {
+				log.debug(tInfo);
+			}
 		} catch (Exception e) {
 			log.error(e);
-		}
-		List<TrainQueryInfo> all = Util.parserQueryInfo(responseBody); 
-		for(TrainQueryInfo tInfo : all) {
-			log.debug(tInfo);
 		}
 		log.debug("-------------------query train end-------------------");
 		return all;
